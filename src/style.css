@@ -2,11 +2,11 @@
   color-scheme: light dark;
 }
 
-#app {
+/* #app {
   width: 100%;
   display: flex;
   justify-content: center;
-}
+} */
 
 canvas {
   width: 800px;
