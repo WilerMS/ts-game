@@ -44,12 +44,9 @@ export class Gun {
       shootImage1,
       shootImage1,
       shootImage1,
-      shootImage1,
       shootImage2,
       shootImage2,
       shootImage2,
-      shootImage2,
-      shootImage3,
       shootImage3,
       shootImage3,
       shootImage3

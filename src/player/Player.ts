@@ -9,7 +9,7 @@ type Keys = {
   a: boolean
 }
 
-export class Tank {
+export class Player {
 
   context!: CanvasRenderingContext2D
   x!: number
