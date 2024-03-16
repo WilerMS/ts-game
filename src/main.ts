@@ -2,11 +2,7 @@ import './style.css'
 import { gameCanvas, gameContext } from './canvas'
 import { Tank } from './player/Tank'
 
-let tankX = (gameCanvas.width / 2)
-let tankY = (gameCanvas.height / 2)
-
-const tank = new Tank(gameContext, tankX, tankY)
-
+const tank = new Tank(gameContext, (gameCanvas.width / 2), (gameCanvas.height / 2))
 
 function animate() {
   gameContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height)
