@@ -1,2 +1,2 @@
-export const CANVAS_WIDTH = 600
-export const CANVAS_HEIGHT = 600
+export const CANVAS_WIDTH = window.innerWidth - 10
+export const CANVAS_HEIGHT = window.innerHeight  - 10
