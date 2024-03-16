@@ -1,5 +1,6 @@
 import tankImageSrc from '../assets/players/color_1/tank_1.png'
 import { Gun } from './Gun'
+import { Projectile } from './Projectile'
 
 type Keys = {
   w: boolean,
@@ -27,19 +28,25 @@ export class Tank {
 
   // Tank features
   gun!: Gun
+  projectiles!: Projectile[]
 
   constructor(context: CanvasRenderingContext2D, x: number, y: number) {
 
     this.context = context
     this.x = x
     this.y = y
+    this.projectiles = []
     this.keys = {
       w: false,
       s: false,
       d: false,
       a: false
     }
-    this.gun = new Gun(context, x, y)
+
+    const deltaX = x + 65 * Math.sin(this.angle)
+    const deltaY = y - 65 * Math.cos(this.angle)
+
+    this.gun = new Gun(context, deltaX, deltaY)
 
     // Creating the image and getting width and height
     const tankImage = new Image()
@@ -65,11 +72,21 @@ export class Tank {
       this.keys[currentKey] = false
     })
 
+    document.addEventListener('click', () => this.shoot())
+
   }
 
+  shoot() {
+    const deltaX = this.x - 15 * Math.sin(this.angle) + 65 * Math.sin(this.gun.rotation)
+    const deltaY = this.y  + 15 * Math.cos(this.angle) - 65 * Math.cos(this.gun.rotation)
 
-  update() {
+    const projectile = new Projectile(this.context, deltaX, deltaY, this.gun.rotation)
+    this.projectiles.push(projectile)
 
+    this.gun.shoot()
+  }
+
+  move() {
     // Accelerate and curb
     if (this.keys.w) {
       this.speed += this.acceleration
@@ -88,25 +105,42 @@ export class Tank {
     // moving the tank
     this.x += this.speed * Math.sin(this.angle)
     this.y -= this.speed * Math.cos(this.angle)
+  }
 
+  update() {
+
+    // Moving the tank
+    this.move()
+
+    // Updating the gun position and angle
+    const deltaX = this.x - 15 * Math.sin(this.angle)
+    const deltaY = this.y + 15 * Math.cos(this.angle)
+    this.gun.update(deltaX, deltaY)
+
+    // checking projectiles positions
+    this.projectiles = this.projectiles.filter(projectile => {
+      projectile.update()
+      return !projectile.destroyed
+    })
   }
 
   draw() {
-
     this.context.save()
     this.context.translate(this.x, this.y)
     this.context.rotate(this.angle)
-
     this.image && this.context.drawImage(this.image, -50, -50, 100, 100)
-
     this.context.restore()
   }
 
   render() {
     this.update()
-    this.gun.update(this.x, this.y)
+
     this.draw()
     this.gun.draw()
+
+    this.projectiles.forEach(projectile => {
+      projectile.draw()
+    })
   }
 
 }
