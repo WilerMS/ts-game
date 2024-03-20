@@ -23,7 +23,7 @@ export class Gun {
   currentShotSprite = 0
   shotSprites!: HTMLImageElement[]
 
-  constructor(context: CanvasRenderingContext2D, x: number, y: number) {
+  constructor(context: CanvasRenderingContext2D, x: number, y: number, image: string) {
 
     this.context = context
     this.x = x
@@ -32,7 +32,7 @@ export class Gun {
 
     // Creating the image and getting width and height
     const gunImage = new Image()
-    gunImage.src = gunImageSrc
+    gunImage.src = image
     gunImage.onload = () => {
       this.width = gunImage.width
       this.height = gunImage.height
