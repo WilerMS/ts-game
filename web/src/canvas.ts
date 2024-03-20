@@ -1,4 +1,4 @@
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from './config'
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants/config'
 
 const gameCanvas = document.querySelector('#canvas') as HTMLCanvasElement
 const gameContext = gameCanvas.getContext('2d')!
