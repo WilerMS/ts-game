@@ -1,11 +1,14 @@
 import { Controller } from "./Controller";
 import { Socket } from "./Socket";
+import { tankImages } from "./constants/images";
+import { Enemy } from "./player/Enemy";
 import { Player } from "./player/Player";
 
 export class Game {
 
   context!: CanvasRenderingContext2D
-  players!: { [x: string]: Player }
+  player!: Player
+  enemies!: { [x: string]: Enemy }
   playerId!: string
   controller!: Controller
   socket!: Socket
@@ -13,11 +16,11 @@ export class Game {
   constructor(context: CanvasRenderingContext2D, playerId: string) {
 
     this.context = context
-
     this.playerId = playerId
-    this.players = {
-      [playerId]: new Player(context, playerId, (context.canvas.width / 2), (context.canvas.height / 2))
-    }
+
+    const index = Math.floor(Math.random() * 4)
+    this.player = new Player(context, playerId, (context.canvas.width / 2), (context.canvas.height / 2), index)
+    this.enemies = {}
 
     this.initController()
     this.initWebsocket()
@@ -27,15 +30,15 @@ export class Game {
   initController() {
     this.controller = new Controller()
     this.controller.click = (x, y) => {
-      this.players[this.playerId].shoot()
+      this.player.shoot()
       if (this.socket.connected) {
         this.socket.send({
           type: 'shoot',
           data: {
-            playerId: this.players[this.playerId].id,
+            playerId: this.player.id,
             shotX: x,
             shotY: y,
-            angle: this.players[this.playerId].gun.rotation,
+            angle: this.player.gun.rotation,
           }
         })
       }
@@ -43,64 +46,62 @@ export class Game {
   }
 
   initWebsocket() {
-
     this.socket = new Socket('ws://localhost:3000/game')
     this.socket.onopen = () => {
       this.socket.send({
         type: 'start',
         data: {
-          playerId: this.players[this.playerId].id,
-          x: this.players[this.playerId].x,
-          y: this.players[this.playerId].y,
-          angle: this.players[this.playerId].angle,
-          gunAngle: this.players[this.playerId].gun.rotation,
+          playerId: this.player.id,
+          x: this.player.x,
+          y: this.player.y,
+          angle: this.player.angle,
+          gunAngle: this.player.gun.rotation,
+          imageIndex: this.player.imageIndex
         }
       })
     }
 
-    this.socket.onstart = (data) => {
-      Object.values(data).forEach((player) => {
-        if (player.playerId === this.playerId) return
-        this.players[player.playerId] = new Player(this.context, player.playerId, player.x, player.y)
+    this.socket.onstart = data => {
+      Object.values(data).forEach((enemy) => {
+        if (enemy.playerId === this.playerId) return
+        this.enemies[enemy.playerId] = new Enemy(this.context, enemy.playerId, enemy.x, enemy.y, enemy.imageIndex)
       })
     }
 
-    this.socket.onupdate = (data) => {
-      if (!this.players[data.playerId]) {
-        this.players[data.playerId] = new Player(this.context, data.playerId, data.x, data.y)
+    this.socket.onupdate = enemy => {
+      if (!this.enemies[enemy.playerId]) {
+        this.enemies[enemy.playerId] = new Enemy(this.context, enemy.playerId, enemy.x, enemy.y, enemy.imageIndex)
       }
-
-      this.players[data.playerId].moveRemotePlayer(data)
+      this.enemies[enemy.playerId].move(enemy)
     }
 
-    this.socket.onshot = (data) => {
-      this.players[data.playerId].shoot()
+    this.socket.onshot = enemy => {
+      this.enemies[enemy.playerId].shoot()
     }
 
-    this.socket.ondisconnection = (data) => {
-      console.log(data)
-      delete this.players[data.playerId]
+    this.socket.ondisconnection = enemy => {
+      delete this.enemies[enemy.playerId]
     }
   }
 
   update() {
     // Updating local player
-    this.players[this.playerId].moveLocalPlayer(this.controller.keys)
-    this.players[this.playerId].rotateLocalPlayerGun(this.controller.mouse.x, this.controller.mouse.y)
+    this.player.move(this.controller.keys)
+    this.player.rotate(this.controller.mouse.x, this.controller.mouse.y)
+    this.player.update()
 
-    Object.values(this.players).forEach(player => {
-      player.update()
-    })
+    Object.values(this.enemies).forEach(enemy => enemy.update())
 
     if (this.socket.connected) {
       this.socket.send({
         type: 'update',
         data: {
-          playerId: this.players[this.playerId].id,
-          x: this.players[this.playerId].x,
-          y: this.players[this.playerId].y,
-          angle: this.players[this.playerId].angle,
-          gunAngle: this.players[this.playerId].gun.rotation
+          playerId: this.player.id,
+          x: this.player.x,
+          y: this.player.y,
+          angle: this.player.angle,
+          gunAngle: this.player.gun.rotation,
+          imageIndex: this.player.imageIndex
         }
       })
     }
@@ -108,20 +109,14 @@ export class Game {
   }
 
   draw() {
-
     this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height)
-
-    Object.values(this.players).forEach(player => {
-      player.draw()
-    })
-
+    this.player.draw()
+    Object.values(this.enemies).forEach(enemy => enemy.draw())
   }
 
   render() {
-
     this.update()
     this.draw()
-
     requestAnimationFrame(this.render.bind(this))
   }
 

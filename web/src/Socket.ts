@@ -4,6 +4,7 @@ export interface PlayerData {
   y: number
   angle: number
   gunAngle: number
+  imageIndex: number
 }
 
 export interface ShotData {
