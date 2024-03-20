@@ -18,17 +18,8 @@ export class Controller {
 
   constructor() {
 
-    this.keys = {
-      w: false,
-      s: false,
-      d: false,
-      a: false
-    }
-
-    this.mouse = {
-      x: 0,
-      y: 0
-    }
+    this.keys = { w: false, s: false, d: false, a: false }
+    this.mouse = { x: 0, y: 0 }
 
     document.addEventListener('keydown', event => {
       const currentKey = event.key.toLowerCase() as keyof Keys
