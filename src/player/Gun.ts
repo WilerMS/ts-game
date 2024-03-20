@@ -55,13 +55,6 @@ export class Gun {
       gunImage.src = sprite
       return gunImage
     })
-
-    // Events to listend mouse
-    document.addEventListener('mousemove', event => {
-      this.mouse.x = event.clientX
-      this.mouse.y = event.clientY
-    })
-
   }
 
   shoot() {
