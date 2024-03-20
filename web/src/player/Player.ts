@@ -1,4 +1,5 @@
 import { Keys } from '../Controller'
+import { PlayerData } from '../Socket'
 import tankImageSrc from '../assets/players/color_1/tank_1.png'
 import { Gun } from './Gun'
 import { Projectile } from './Projectile'
@@ -48,7 +49,7 @@ export class Player {
 
   }
 
-  move(keys: Keys) {
+  moveLocalPlayer(keys: Keys) {
     // Accelerate and curb
     if (keys.w) {
       this.speed += this.acceleration
@@ -71,12 +72,25 @@ export class Player {
     // Updating the gun position and angle
     const deltaX = this.x - 15 * Math.sin(this.angle)
     const deltaY = this.y + 15 * Math.cos(this.angle)
-    this.gun.update(deltaX, deltaY)
+    this.gun.move(deltaX, deltaY)
   }
 
-  rotateGun(x: number, y: number) {
-    this.gun.mouse.x = x
-    this.gun.mouse.y = y
+  moveRemotePlayer(player: PlayerData) {
+    this.x = player.x
+    this.y = player.y
+    this.angle = player.angle
+    this.gun.rotation = player.gunAngle
+
+    const deltaX = this.x - 15 * Math.sin(this.angle)
+    const deltaY = this.y + 15 * Math.cos(this.angle)
+    this.gun.move(deltaX, deltaY)
+  }
+
+  rotateLocalPlayerGun(x: number, y: number) {
+    const deltaX = this.x - 15 * Math.sin(this.angle)
+    const deltaY = this.y + 15 * Math.cos(this.angle)
+    const angle = Math.atan2(x - deltaX, -(y - deltaY))
+    this.gun.rotate(angle)
   }
 
   shoot() {
@@ -90,6 +104,7 @@ export class Player {
   }
 
   update() {
+    this.gun.update()
     // checking projectiles positions
     this.projectiles = this.projectiles.filter(projectile => {
       projectile.update()
@@ -111,11 +126,6 @@ export class Player {
     for (const projectile of this.projectiles) {
       projectile.draw()
     }
-  }
-
-  render() {
-    this.update()
-    this.draw()
   }
 
 }

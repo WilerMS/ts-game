@@ -3,6 +3,6 @@ import { gameCanvas, gameContext } from './canvas'
 import { Game } from './Game'
 
 
-const game = new Game(gameContext, '102')
+const game = new Game(gameContext, `${new Date().getTime()}`)
 
 game.render()

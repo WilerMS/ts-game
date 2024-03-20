@@ -61,12 +61,16 @@ export class Gun {
     this.isShooting = true
   }
 
-  update(x: number, y: number) {
-    // Calculating the position and angle
+  move(x: number, y: number) {
     this.x = x
     this.y = y
-    this.rotation = Math.atan2(this.mouse.x - x, -(this.mouse.y - y))
+  }
 
+  rotate(angle: number) {
+    this.rotation = angle
+  }
+
+  update() {
     // Calculating current shot sprite
     if (this.isShooting) {
       if (this.currentShotSprite < this.shotSprites.length - 1) {
