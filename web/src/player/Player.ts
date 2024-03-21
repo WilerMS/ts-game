@@ -1,8 +1,10 @@
 import { Keys } from '../Controller'
-import { Tank, type TankImages } from './Tanks'
+import { Tank } from './Tanks'
 
 export class Player extends Tank {
   
+  canvasPosition!: { x: number, y: number }
+
   speed = 3
   maxSpeed = 5
   acceleration = 0.2
@@ -17,6 +19,11 @@ export class Player extends Tank {
     imageIndex: number
   ) {
     super(context, id, x, y, imageIndex)
+    const position = this.context.canvas.getBoundingClientRect()
+    this.canvasPosition = {
+      x: position.x,
+      y: position.y
+    }
   }
 
   move(keys: Keys) {
@@ -46,9 +53,9 @@ export class Player extends Tank {
   }
 
   rotate(x: number, y: number) {
-    const deltaX = this.x - 15 * Math.sin(this.angle)
+    const deltaX = (this.x) - 15 * Math.sin(this.angle)
     const deltaY = this.y + 15 * Math.cos(this.angle)
-    const angle = Math.atan2(x - deltaX, -(y - deltaY))
+    const angle = Math.atan2(x - this.canvasPosition.x - deltaX, -(y - this.canvasPosition.y - deltaY))
     this.gun.rotate(angle)
   }
 
