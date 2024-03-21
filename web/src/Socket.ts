@@ -56,7 +56,7 @@ export class Socket {
 
   }
 
-  send(message: EmitMessage) {
+  async send(message: EmitMessage) {
     this.socket.send(JSON.stringify(message))
   }
 
