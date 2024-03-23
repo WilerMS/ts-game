@@ -4,6 +4,9 @@ import { Collidable } from "./Collidable"
 import { Gun } from "./Gun"
 import { Projectile } from "./Projectile"
 
+import track1 from '../assets/players/tracks/Track_1_A.png'
+import track2 from '../assets/players/tracks/Track_2_A.png'
+
 export type TankImages = {
   tank: string,
   gun: string
@@ -20,11 +23,15 @@ export class Tank implements Collidable {
   height!: number
   image!: HTMLImageElement
   imageIndex!: number
+  driving!: boolean
 
   angle = 0
 
   gun!: Gun
+  tracks: HTMLImageElement[] = []
+  trackFrame: number = 0
   projectiles!: Projectile[]
+
 
   constructor(
     context: CanvasRenderingContext2D,
@@ -46,6 +53,12 @@ export class Tank implements Collidable {
     const deltaY = y - 65 * Math.cos(this.angle)
 
     this.gun = new Gun(context, deltaX, deltaY, tankImages[imageIndex].gun)
+    this.tracks = [
+      track1, track1, track1, track1, track2, track2, track2, track2, 
+      track1, track1, track1, track1, track2, track2, track2, track2,
+      track1, track1, track1, track1, track2, track2, track2, track2,
+      track1, track1, track1, track1, track2, track2, track2, track2,
+    ].map(image => loadImage(image))
 
     // Creating the image and getting width and height
     loadImage(tankImages[imageIndex].tank, image => this.image = image)
@@ -61,8 +74,19 @@ export class Tank implements Collidable {
     this.gun.shoot()
   }
 
+  updateTracks() {
+    if (this.driving) {
+      console.log(this.trackFrame)
+      this.trackFrame++
+      if (this.trackFrame === this.tracks.length) {
+        this.trackFrame = 0
+      }
+    }
+  }
+
   update(gameCollidableObjects: Collidable[]) {
     this.gun.update()
+    this.updateTracks()
 
     // checking projectiles positions
     this.projectiles = this.projectiles
@@ -73,10 +97,13 @@ export class Tank implements Collidable {
   }
 
   draw() {
+
+    // Drawing tank
     this.context.save()
     this.context.translate(this.x, this.y)
     this.context.rotate(this.angle)
-    this.context.fillStyle = 'red'
+    this.tracks[0] && this.context.drawImage(this.tracks[this.trackFrame], -40, -50, 20, 105)
+    this.tracks[0] && this.context.drawImage(this.tracks[this.trackFrame], 20, -50, 20, 105)
     this.image && this.context.drawImage(this.image, -50, -50, 100, 100)
     this.context.restore()
 

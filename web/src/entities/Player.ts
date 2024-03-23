@@ -27,7 +27,7 @@ export class Player extends Tank {
   }
 
   move(keys: Keys) {
-    
+    this.driving = true
     if (keys.w && !keys.s) { //* When the player is speeding the car
       this.speed += this.acceleration
 
@@ -58,6 +58,10 @@ export class Player extends Tank {
         this.speed += this.friction
         if (this.speed >= 0) this.speed = 0
       }
+    }
+
+    if (this.speed === 0) {
+      this.driving = false
     }
 
     // moving the tank
