@@ -1,7 +1,7 @@
 import { tankImages } from "../constants/images"
-import { Enemy } from "./Enemy"
+import { loadImage } from "../utils"
+import { Collidable } from "./Collidable"
 import { Gun } from "./Gun"
-import { Player } from "./Player"
 import { Projectile } from "./Projectile"
 
 export type TankImages = {
@@ -9,7 +9,8 @@ export type TankImages = {
   gun: string
 }
 
-export class Tank {
+
+export class Tank implements Collidable {
 
   id!: string
   context!: CanvasRenderingContext2D
@@ -38,6 +39,8 @@ export class Tank {
     this.y = y
     this.projectiles = []
     this.imageIndex = imageIndex
+    this.width = 70
+    this.height = 96
 
     const deltaX = x + 65 * Math.sin(this.angle)
     const deltaY = y - 65 * Math.cos(this.angle)
@@ -65,12 +68,13 @@ export class Tank {
     this.gun.shoot()
   }
 
-  update() {
+  update(gameCollidableObjects: Collidable[]) {
     this.gun.update()
+
     // checking projectiles positions
     this.projectiles = this.projectiles
       .filter(projectile => {
-        projectile.update()
+        projectile.update(gameCollidableObjects)
         return !projectile.destroyed
       })
   }
@@ -79,6 +83,7 @@ export class Tank {
     this.context.save()
     this.context.translate(this.x, this.y)
     this.context.rotate(this.angle)
+    this.context.fillStyle = 'red'
     this.image && this.context.drawImage(this.image, -50, -50, 100, 100)
     this.context.restore()
 
@@ -87,6 +92,7 @@ export class Tank {
 
     // Drawing projectiles
     for (const projectile of this.projectiles) {
+      // if (projectile.destroyed) continue
       projectile.draw()
     }
   }
