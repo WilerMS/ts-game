@@ -3,18 +3,11 @@ import { Socket } from "./Socket"
 import { Enemy } from "./entities/Enemy"
 import { Player } from "./entities/Player"
 
-import backgroundImage from './assets/tiles/top-view-city-with-desert_70347-2005.avif'
-
 export class Game {
 
   context!: CanvasRenderingContext2D
   controller!: Controller
   socket!: Socket
-
-  // TODO: This may be better in its own class
-  background!: HTMLImageElement
-  backgroundX!: number
-  backgroundY!: number
 
   playerId!: string
   player!: Player
@@ -29,12 +22,6 @@ export class Game {
     const index = Math.floor(Math.random() * 4)
     this.player = new Player(context, playerId, (context.canvas.width / 2), (context.canvas.height / 2), index)
     this.enemies = {}
-
-    const background = new Image()
-    background.src = backgroundImage
-    background.onload = () => {
-      this.background = background
-    }
 
     this.initController()
     this.initWebsocket()
@@ -84,12 +71,14 @@ export class Game {
 
     this.socket.onupdate = enemy => {
       if (!this.enemies[enemy.playerId]) {
+        if (enemy.playerId === this.playerId) return
         this.enemies[enemy.playerId] = new Enemy(this.context, enemy.playerId, enemy.x, enemy.y, enemy.imageIndex)
       }
       this.enemies[enemy.playerId].move(enemy)
     }
 
     this.socket.onshot = enemy => {
+      if (enemy.playerId === this.playerId) return
       this.enemies[enemy.playerId].shoot()
     }
 
@@ -99,20 +88,14 @@ export class Game {
   }
 
   update() {
+    const enemies = Object.values(this.enemies)
+
     // Updating local player
     this.player.move(this.controller.keys)
     this.player.rotate(this.controller.mouse.x, this.controller.mouse.y)
-    this.player.update()
+    this.player.update(enemies)
 
-    console.log(this.player.projectiles.length)
-    const enemies = Object.values(this.enemies)
-    this.player.projectiles.forEach((projectile) => {
-      projectile.checkColision(enemies)
-    })
-
-
-    enemies.forEach(enemy => enemy.update())
-
+    enemies.forEach(enemy => enemy.update([...enemies, this.player]))
 
     if (this.socket.connected) {
       this.socket.send({
