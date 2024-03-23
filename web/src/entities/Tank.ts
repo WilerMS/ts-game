@@ -48,14 +48,7 @@ export class Tank implements Collidable {
     this.gun = new Gun(context, deltaX, deltaY, tankImages[imageIndex].gun)
 
     // Creating the image and getting width and height
-    const tankImage = new Image()
-    tankImage.src = tankImages[imageIndex].tank
-    tankImage.onload = () => {
-      this.width = tankImage.width
-      this.height = tankImage.height
-      this.image = tankImage
-    }
-
+    loadImage(tankImages[imageIndex].tank, image => this.image = image)
   }
 
   shoot() {

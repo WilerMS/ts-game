@@ -2,6 +2,7 @@ import gunImageSrc from '../assets/players/color_1/Gun_01.png'
 import shootImage1 from '../assets/effects/flash/Flash_A_01.png'
 import shootImage2 from '../assets/effects/flash/Flash_A_02.png'
 import shootImage3 from '../assets/effects/flash/Flash_A_03.png'
+import { loadImage } from '../utils'
 
 type Mouse = {
   x: number,
@@ -31,13 +32,11 @@ export class Gun {
     this.mouse = { x: 0, y: 0 }
 
     // Creating the image and getting width and height
-    const gunImage = new Image()
-    gunImage.src = image
-    gunImage.onload = () => {
-      this.width = gunImage.width
-      this.height = gunImage.height
-      this.image = gunImage
-    }
+    loadImage(image, image => {
+      this.width = image.width
+      this.height = image.height
+      this.image = image
+    })
 
     // Creating images of shoot sprites and adding them to the shotSprites array
     this.shotSprites = [
@@ -51,9 +50,7 @@ export class Gun {
       shootImage3,
       shootImage3
     ].map((sprite) => {
-      const gunImage = new Image()
-      gunImage.src = sprite
-      return gunImage
+      return loadImage(sprite)
     })
   }
 
