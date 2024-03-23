@@ -1,26 +1,40 @@
-import { Controller } from "./Controller";
-import { Socket } from "./Socket";
-import { tankImages } from "./constants/images";
-import { Enemy } from "./player/Enemy";
-import { Player } from "./player/Player";
+import { Controller } from "./Controller"
+import { Socket } from "./Socket"
+import { Enemy } from "./entities/Enemy"
+import { Player } from "./entities/Player"
+
+import backgroundImage from './assets/tiles/top-view-city-with-desert_70347-2005.avif'
 
 export class Game {
 
   context!: CanvasRenderingContext2D
-  player!: Player
-  enemies!: { [x: string]: Enemy }
-  playerId!: string
   controller!: Controller
   socket!: Socket
+
+  // TODO: This may be better in its own class
+  background!: HTMLImageElement
+  backgroundX!: number
+  backgroundY!: number
+
+  playerId!: string
+  player!: Player
+  enemies!: { [x: string]: Enemy }
 
   constructor(context: CanvasRenderingContext2D, playerId: string) {
 
     this.context = context
     this.playerId = playerId
 
+    // TODO: Replace this logic to accept individual tank choices
     const index = Math.floor(Math.random() * 4)
     this.player = new Player(context, playerId, (context.canvas.width / 2), (context.canvas.height / 2), index)
     this.enemies = {}
+
+    const background = new Image()
+    background.src = backgroundImage
+    background.onload = () => {
+      this.background = background
+    }
 
     this.initController()
     this.initWebsocket()
@@ -46,7 +60,7 @@ export class Game {
   }
 
   initWebsocket() {
-    this.socket = new Socket('ws://localhost:3000/game')
+    this.socket = new Socket('ws://localhost:3500/game' ?? 'ws://10.200.223.237:3500/game')
     this.socket.onopen = () => {
       this.socket.send({
         type: 'start',
@@ -90,7 +104,15 @@ export class Game {
     this.player.rotate(this.controller.mouse.x, this.controller.mouse.y)
     this.player.update()
 
-    Object.values(this.enemies).forEach(enemy => enemy.update())
+    console.log(this.player.projectiles.length)
+    const enemies = Object.values(this.enemies)
+    this.player.projectiles.forEach((projectile) => {
+      projectile.checkColision(enemies)
+    })
+
+
+    enemies.forEach(enemy => enemy.update())
+
 
     if (this.socket.connected) {
       this.socket.send({
@@ -110,6 +132,7 @@ export class Game {
 
   draw() {
     this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height)
+
     this.player.draw()
     Object.values(this.enemies).forEach(enemy => enemy.draw())
   }

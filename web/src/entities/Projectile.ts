@@ -1,4 +1,6 @@
 import projectileImageSrc from '../assets/effects/shell.png'
+import { Enemy } from './Enemy'
+import { Player } from './Player'
 
 
 export class Projectile {
@@ -36,6 +38,18 @@ export class Projectile {
       this.image = projectileImage
     }
 
+  }
+
+  checkColision(objects: (Enemy | Player)[]) {
+    for (const enemy of objects) {
+      const overlapX = (this.x < enemy.x + enemy.width) && (this.x + this.width > enemy.x);
+      const overlapY = (this.y < enemy.y + enemy.height) && (this.y + this.height > enemy.y);
+      /* console.log({ overlapX, overlapY, colision: overlapX && overlapY }) */
+      if (overlapX && overlapY) {
+        this.destroy()
+        return
+      }
+    }
   }
 
   update() {

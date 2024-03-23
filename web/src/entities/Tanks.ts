@@ -1,5 +1,7 @@
 import { tankImages } from "../constants/images"
+import { Enemy } from "./Enemy"
 import { Gun } from "./Gun"
+import { Player } from "./Player"
 import { Projectile } from "./Projectile"
 
 export type TankImages = {
@@ -66,10 +68,11 @@ export class Tank {
   update() {
     this.gun.update()
     // checking projectiles positions
-    this.projectiles = this.projectiles.filter(projectile => {
-      projectile.update()
-      return !projectile.destroyed
-    })
+    this.projectiles = this.projectiles
+      .filter(projectile => {
+        projectile.update()
+        return !projectile.destroyed
+      })
   }
 
   draw() {

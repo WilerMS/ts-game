@@ -27,20 +27,38 @@ export class Player extends Tank {
   }
 
   move(keys: Keys) {
-    // Accelerate and curb
-    if (keys.w) {
+    
+    if (keys.w && !keys.s) { //* When the player is speeding the car
       this.speed += this.acceleration
 
       // Turn and drive the tank
       if (keys.a) this.angle -= this.rotation
       if (keys.d) this.angle += this.rotation
-    } else {
-      this.speed -= this.friction
-    }
 
-    // Limit max speed and negative speed
-    if (this.speed > this.maxSpeed) this.speed = this.maxSpeed
-    else if (this.speed < 0) this.speed = 0
+      // Limit max positive speed
+      if (this.speed > this.maxSpeed) this.speed = this.maxSpeed
+
+    
+    } if (keys.s && !keys.w) { //* When the player is reversing the car
+      this.speed -= this.acceleration
+
+      // Turn and drive the tank
+      if (keys.a) this.angle -= this.rotation
+      if (keys.d) this.angle += this.rotation
+
+      // Limit min negative speed
+      if (this.speed < -this.maxSpeed) this.speed = -this.maxSpeed
+
+    } else { //* When the player is not doing anything
+
+      if (this.speed > 0) {
+        this.speed -= this.friction
+        if (this.speed < 0) this.speed = 0
+      } else {
+        this.speed += this.friction
+        if (this.speed >= 0) this.speed = 0
+      }
+    }
 
     // moving the tank
     this.x += this.speed * Math.sin(this.angle)

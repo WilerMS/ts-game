@@ -59,6 +59,6 @@ app.ws('/game', (ws, req, next) => {
 })
 
 // running app
-app.listen(3000, () => {
-  console.log(`Server on port ${3000}`)
+app.listen(3500, () => {
+  console.log(`Server on port ${3500}`)
 })
