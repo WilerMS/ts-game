@@ -1,5 +1,5 @@
 import { Keys } from '../Controller'
-import { Tank } from './Tanks'
+import { Tank } from './Tank'
 
 export class Player extends Tank {
   

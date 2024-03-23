@@ -1,5 +1,5 @@
 import { PlayerData } from '../Socket'
-import { Tank, type TankImages } from './Tanks'
+import { Tank, type TankImages } from './Tank'
 
 export class Enemy extends Tank {
   
