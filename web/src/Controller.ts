@@ -3,7 +3,8 @@ export type Keys = {
   w: boolean,
   s: boolean,
   d: boolean,
-  a: boolean
+  a: boolean,
+  ' ': boolean
 }
 
 export type Mouse = {
@@ -18,7 +19,7 @@ export class Controller {
 
   constructor() {
 
-    this.keys = { w: false, s: false, d: false, a: false }
+    this.keys = { w: false, s: false, d: false, a: false, ' ': false }
     this.mouse = { x: 0, y: 0 }
 
     document.addEventListener('keydown', event => {

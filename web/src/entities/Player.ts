@@ -6,6 +6,7 @@ export class Player extends Tank {
   canvasPosition!: { x: number, y: number }
 
   speed = 3
+  boostSpeed = 0
   maxSpeed = 5
   acceleration = 0.2
   friction = 0.06
@@ -65,13 +66,17 @@ export class Player extends Tank {
     }
 
     // moving the tank
-    this.x += this.speed * Math.sin(this.angle)
-    this.y -= this.speed * Math.cos(this.angle)
+    this.x += (this.speed + this.boostSpeed) * Math.sin(this.angle)
+    this.y -= (this.speed + this.boostSpeed) * Math.cos(this.angle)
 
     // Updating the gun position and angle
     const deltaX = this.x - 15 * Math.sin(this.angle)
     const deltaY = this.y + 15 * Math.cos(this.angle)
     this.gun.move(deltaX, deltaY)
+  }
+
+  boost(key: boolean) {
+    this.boostSpeed = key ? 4 : 0
   }
 
   rotate(x: number, y: number) {
