@@ -10,9 +10,19 @@ import tank3 from '../assets/players/color_2/tank_1.png'
 import gun4 from '../assets/players/color_2/Gun_01.png'
 import tank4 from '../assets/players/color_2/tank_1.png'
 
+import flash1 from '../assets/effects/flash/Flash_A_01.png'
+import flash2 from '../assets/effects/flash/Flash_A_02.png'
+import flash3 from '../assets/effects/flash/Flash_A_03.png'
+
 export const tankImages = [
   { tank: tank1, gun: gun1 },
   { tank: tank2, gun: gun2 },
   { tank: tank3, gun: gun3 },
   { tank: tank4, gun: gun4 },
+]
+
+export const flashImages = [
+  flash1,
+  flash2,
+  flash3,
 ]
