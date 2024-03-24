@@ -1,5 +1,6 @@
+import { Camera } from '../Camera'
 import { PlayerData } from '../Socket'
-import { Tank, type TankImages } from './Tank'
+import { Tank } from './Tank'
 
 export class Enemy extends Tank {
   
@@ -14,9 +15,10 @@ export class Enemy extends Tank {
     id: string, 
     x: number, 
     y: number,
-    imageIndex: number
+    imageIndex: number,
+    camera: Camera
   ) {
-    super(context, id, x, y, imageIndex)
+    super(context, id, x, y, imageIndex, camera)
   }
 
   move(player: PlayerData) {

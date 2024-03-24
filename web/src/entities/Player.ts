@@ -1,3 +1,4 @@
+import { Camera } from '../Camera'
 import { Keys } from '../Controller'
 import { Tank } from './Tank'
 
@@ -17,9 +18,10 @@ export class Player extends Tank {
     id: string, 
     x: number, 
     y: number,
-    imageIndex: number
+    imageIndex: number,
+    camera: Camera
   ) {
-    super(context, id, x, y, imageIndex)
+    super(context, id, x, y, imageIndex, camera)
     const position = this.context.canvas.getBoundingClientRect()
     this.canvasPosition = {
       x: position.x,
@@ -75,14 +77,14 @@ export class Player extends Tank {
     this.gun.move(deltaX, deltaY)
   }
 
-  boost(key: boolean) {
-    this.boostSpeed = key ? 4 : 0
+  boost(keys: Keys) {
+    this.boostSpeed = keys[' '] && keys.w ? 4 : 0
   }
 
-  rotate(x: number, y: number) {
-    const deltaX = (this.x) - 15 * Math.sin(this.angle)
-    const deltaY = this.y + 15 * Math.cos(this.angle)
-    const angle = Math.atan2(x - this.canvasPosition.x - deltaX, -(y - this.canvasPosition.y - deltaY))
+  rotateGun(x: number, y: number) {
+    const gunX = this.x - 15 * Math.sin(this.angle)
+    const gunY = this.y + 15 * Math.cos(this.angle)
+    const angle = Math.atan2(x - this.canvasPosition.x - gunX + this.camera.x, -(y - this.canvasPosition.y - gunY + this.camera.y))
     this.gun.rotate(angle)
   }
 
