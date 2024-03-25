@@ -85,6 +85,8 @@ export class Game {
       if (!this.enemies[enemy.playerId]) {
         this.enemies[enemy.playerId] = new Enemy(this.context, enemy.playerId, enemy.x, enemy.y, enemy.imageIndex, this.camera)
       }
+
+      this.enemies[enemy.playerId].driving = (this.enemies[enemy.playerId].x !== enemy.x || this.enemies[enemy.playerId].y !== enemy.y)
       this.enemies[enemy.playerId].move(enemy)
     }
 
