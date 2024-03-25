@@ -1,11 +1,8 @@
-import { tankImages } from "../constants/images"
+import { boostImages, tankImages, trackImages } from "../constants/images"
 import { loadImage } from "../utils"
 import { Collidable } from "./Collidable"
 import { Gun } from "./Gun"
 import { Projectile } from "./Projectile"
-
-import track1 from '../assets/players/tracks/Track_1_A.png'
-import track2 from '../assets/players/tracks/Track_2_A.png'
 import { Camera } from "../Camera"
 
 export type TankImages = {
@@ -31,6 +28,10 @@ export class Tank implements Collidable {
   gun!: Gun
   tracks: HTMLImageElement[] = []
   trackFrame: number = 0
+
+  boostFlames: HTMLImageElement[] = []
+  boostFlamesFrame: number = 0
+
   projectiles!: Projectile[]
 
   // TODO: See if theres another way to do this
@@ -61,12 +62,8 @@ export class Tank implements Collidable {
     const gunY = y - 65 * Math.cos(this.angle)
 
     this.gun = new Gun(context, gunX, gunY, tankImages[imageIndex].gun)
-    this.tracks = [
-      track1, track1, track1, track1,
-      track2, track2, track2, track2,
-      track1, track1, track1, track1,
-      track2, track2, track2, track2,
-    ].map(image => loadImage(image))
+    this.tracks = trackImages.map(image => loadImage(image))
+    this.boostFlames = boostImages.map(image => loadImage(image))
 
     // Creating the image and getting width and height
     loadImage(tankImages[imageIndex].tank, image => this.image = image)

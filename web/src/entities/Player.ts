@@ -1,5 +1,6 @@
 import { Camera } from '../Camera'
 import { Keys } from '../Controller'
+import { Collidable } from './Collidable'
 import { Tank } from './Tank'
 
 export class Player extends Tank {
@@ -88,4 +89,33 @@ export class Player extends Tank {
     this.gun.rotate(angle)
   }
 
+  updateFlame() {
+    if (this.boostSpeed === 4) {
+      this.boostFlamesFrame++
+      if (this.boostFlamesFrame === this.boostFlames.length) {
+        this.boostFlamesFrame = 0
+      }
+    }
+  }
+
+  update(gameCollidableObjects: Collidable[]): void {
+    super.update(gameCollidableObjects)
+
+    this.updateFlame()
+  }
+
+  draw() {
+    
+    if (this.boostSpeed === 4) {
+      this.context.save()
+      this.context.translate(this.x - this.camera.x, this.y - this.camera.y)
+      this.context.rotate(this.angle)
+      
+      this.context.drawImage(this.boostFlames[this.boostFlamesFrame], -100, -55, 200, 200)
+      
+      this.context.restore()
+    }
+
+    super.draw()
+  }
 }
