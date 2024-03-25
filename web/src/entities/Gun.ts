@@ -1,4 +1,4 @@
-import gunImageSrc from '../assets/players/color_1/Gun_01.png'
+import { Camera } from '../Camera'
 import shootImage1 from '../assets/effects/flash/Flash_A_01.png'
 import shootImage2 from '../assets/effects/flash/Flash_A_02.png'
 import shootImage3 from '../assets/effects/flash/Flash_A_03.png'
@@ -22,6 +22,7 @@ export class Gun {
 
   isShooting = false
   currentShotSprite = 0
+  shotSpriteFrameRate = 5
   shotSprites!: HTMLImageElement[]
 
   constructor(context: CanvasRenderingContext2D, x: number, y: number, image: string) {
@@ -43,15 +44,19 @@ export class Gun {
       shootImage1,
       shootImage1,
       shootImage1,
+      shootImage1,
+      shootImage1,
       shootImage2,
       shootImage2,
       shootImage2,
+      shootImage2,
+      shootImage2,
+      shootImage3,
+      shootImage3,
       shootImage3,
       shootImage3,
       shootImage3
-    ].map((sprite) => {
-      return loadImage(sprite)
-    })
+    ].map((sprite) => loadImage(sprite))
   }
 
   shoot() {
@@ -70,29 +75,35 @@ export class Gun {
   update() {
     // Calculating current shot sprite
     if (this.isShooting) {
-      if (this.currentShotSprite < this.shotSprites.length - 1) {
-        this.currentShotSprite++
-      } else {
+
+      this.currentShotSprite++
+
+      if (this.currentShotSprite === this.shotSprites.length) {
         this.currentShotSprite = 0
         this.isShooting = false
       }
+
     }
   }
 
-  draw() {
+  draw(camera?: Camera) {
+
+    const cameraX = camera ? camera.x : 0
+    const cameraY = camera ? camera.y : 0
+
     // Drawing the current gun
     this.context.save()
-    this.context.translate(this.x, this.y)
+    this.context.translate(this.x - cameraX, this.y - cameraY)
     this.context.rotate(this.rotation)
     this.image && this.context.drawImage(this.image, -(this.width/4), -(this.height/4), this.width/2, this.height/2)
     this.context.restore()
 
     // Drawing the shot
-    const deltaX = this.x + 80 * Math.sin(this.rotation)
-    const deltaY = this.y - 80 * Math.cos(this.rotation)
+    const gunX = this.x + 80 * Math.sin(this.rotation)
+    const gunY = this.y - 80 * Math.cos(this.rotation)
     
     this.context.save()
-    this.context.translate(deltaX, deltaY)
+    this.context.translate(gunX - cameraX, gunY - cameraY)
     this.context.rotate(this.rotation)
 
     if (this.isShooting) {
