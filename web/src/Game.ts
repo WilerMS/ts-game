@@ -23,7 +23,7 @@ export class Game {
   constructor(context: CanvasRenderingContext2D, playerId: string) {
 
     this.context = context
-    this.camera = new Camera(0, 0, context.canvas.width, context.canvas.height, 4000, 4000)
+    this.camera = new Camera(0, 0, context.canvas.width, context.canvas.height, 7000, 7000)
     this.playerId = playerId
 
     // TODO: Replace this logic to accept individual tank choices
