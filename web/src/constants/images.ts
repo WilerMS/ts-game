@@ -4,11 +4,11 @@ import tank1 from '../assets/players/color_1/tank_1.png'
 import gun2 from '../assets/players/color_2/Gun_01.png'
 import tank2 from '../assets/players/color_2/tank_1.png'
 
-import gun3 from '../assets/players/color_2/Gun_01.png'
-import tank3 from '../assets/players/color_2/tank_1.png'
+import gun3 from '../assets/players/color_3/Gun_01.png'
+import tank3 from '../assets/players/color_3/tank_1.png'
 
-import gun4 from '../assets/players/color_2/Gun_01.png'
-import tank4 from '../assets/players/color_2/tank_1.png'
+import gun4 from '../assets/players/color_4/Gun_01.png'
+import tank4 from '../assets/players/color_4/tank_1.png'
 
 import flash1 from '../assets/effects/flash/Flash_A_01.png'
 import flash2 from '../assets/effects/flash/Flash_A_02.png'
