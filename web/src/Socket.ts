@@ -5,6 +5,7 @@ export interface PlayerData {
   angle: number
   gunAngle: number
   imageIndex: number
+  // health: number
 }
 
 export interface ShotData {
@@ -20,7 +21,7 @@ type EventMessage =
   { type: 'start',  data: { [x: string]: PlayerData } } |
   { type: 'disconnection',  data: Pick<PlayerData, 'playerId'> }
 
-type EmitMessage =
+export type EmitMessage =
   { type: 'start' | 'update',  data: PlayerData } |
   { type: 'shoot',  data: ShotData }
 
