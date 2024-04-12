@@ -1,11 +1,13 @@
 import { Camera } from '../Camera'
-import { Keys } from '../Controller'
+import { Controller, Keys } from '../Controller'
+import { EmitMessage } from '../Socket'
 import { Collidable } from './Collidable'
 import { Tank } from './Tank'
 
 export class Player extends Tank {
   
   canvasPosition!: { x: number, y: number }
+  controller!: Controller
 
   speed = 3
   boostSpeed = 0
@@ -23,12 +25,26 @@ export class Player extends Tank {
     camera: Camera
   ) {
     super(context, id, x, y, imageIndex, camera)
+
     const position = this.context.canvas.getBoundingClientRect()
-    this.canvasPosition = {
-      x: position.x,
-      y: position.y
+    this.canvasPosition = { x: position.x, y: position.y }
+
+    this.controller = new Controller()
+    this.controller.click = (x, y) => {
+      this.shoot()
+      this.onShot({
+        type: 'shoot',
+        data: {
+          playerId: this.id,
+          shotX: x,
+          shotY: y,
+          angle: this.gun.rotation,
+        }
+      })
     }
   }
+
+  onShot(data: EmitMessage) {}
 
   move(keys: Keys) {
     this.driving = true
@@ -68,9 +84,12 @@ export class Player extends Tank {
       this.driving = false
     }
 
-    // moving the tank
-    this.x += (this.speed + this.boostSpeed) * Math.sin(this.angle)
-    this.y -= (this.speed + this.boostSpeed) * Math.cos(this.angle)
+    const newX = this.x + (this.speed + this.boostSpeed) * Math.sin(this.angle)
+    const newY = this.y - (this.speed + this.boostSpeed) * Math.cos(this.angle)
+
+    // moving the tank if its not in the boundaries
+    if (newX >= 0 && newX <= this.camera.gameWidth) this.x = newX
+    if (newY >= 0 && newY <= this.camera.gameHeight) this.y = newY
 
     // Updating the gun position and angle
     const deltaX = this.x - 15 * Math.sin(this.angle)
@@ -100,6 +119,10 @@ export class Player extends Tank {
 
   update(gameCollidableObjects: Collidable[]): void {
     super.update(gameCollidableObjects)
+
+    this.move(this.controller.keys)
+    this.boost(this.controller.keys)
+    this.rotateGun(this.controller.mouse.x, this.controller.mouse.y)
 
     this.updateFlame()
   }
