@@ -1,5 +1,4 @@
 import { Camera } from "./Camera"
-import { Controller } from "./Controller"
 import { Socket } from "./Socket"
 import { Enemy } from "./entities/Enemy"
 import { Player } from "./entities/Player"
@@ -10,11 +9,10 @@ import bg from './assets/tiles/map.png'
 export class Game {
 
   context!: CanvasRenderingContext2D
-  controller!: Controller
   socket!: Socket
   camera!: Camera
-
   background!: HTMLImageElement
+  mapBoundaries!: { width: number, height: number }
 
   playerId!: string
   player!: Player
@@ -23,7 +21,8 @@ export class Game {
   constructor(context: CanvasRenderingContext2D, playerId: string) {
 
     this.context = context
-    this.camera = new Camera(0, 0, context.canvas.width, context.canvas.height, 7000, 7000)
+    this.mapBoundaries = { width: 7000, height: 7000}
+    this.camera = new Camera(0, 0, context.canvas.width, context.canvas.height, this.mapBoundaries.width, this.mapBoundaries.height)
     this.playerId = playerId
 
     // TODO: Replace this logic to accept individual tank choices
@@ -33,27 +32,8 @@ export class Game {
 
     this.background = loadImage(bg)
 
-    this.initController()
     this.initWebsocket()
 
-  }
-
-  initController() {
-    this.controller = new Controller()
-    this.controller.click = (x, y) => {
-      this.player.shoot()
-      if (this.socket.connected) {
-        this.socket.send({
-          type: 'shoot',
-          data: {
-            playerId: this.player.id,
-            shotX: x,
-            shotY: y,
-            angle: this.player.gun.rotation,
-          }
-        })
-      }
-    }
   }
 
   initWebsocket() {
@@ -70,6 +50,13 @@ export class Game {
           imageIndex: this.player.imageIndex
         }
       })
+    }
+
+    this.player.onShot = (data) => {
+      console.log({ data })
+      if (this.socket.connected) {
+        this.socket.send(data)
+      }
     }
 
     this.socket.onstart = data => {
@@ -102,13 +89,9 @@ export class Game {
 
   update() {
     const enemies = Object.values(this.enemies)
-
     // Updating local player
-    this.player.move(this.controller.keys)
-    this.player.boost(this.controller.keys)
-    this.player.rotateGun(this.controller.mouse.x, this.controller.mouse.y)
     this.player.update(enemies)
-    
+    // Updating enemies with socket data
     enemies.forEach(enemy => enemy.update([...enemies, this.player]))
 
     // Updating camera
