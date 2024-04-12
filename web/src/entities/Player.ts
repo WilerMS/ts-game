@@ -88,8 +88,8 @@ export class Player extends Tank {
     const newY = this.y - (this.speed + this.boostSpeed) * Math.cos(this.angle)
 
     // moving the tank if its not in the boundaries
-    if (newX >= 0 && newX <= this.camera.gameWidth) this.x = newX
-    if (newY >= 0 && newY <= this.camera.gameHeight) this.y = newY
+    if (newX >= this.width / 2 && newX <= this.camera.gameWidth - this.width / 2) this.x = newX
+    if (newY >= this.height / 2 && newY <= this.camera.gameHeight - this.height / 2) this.y = newY
 
     // Updating the gun position and angle
     const deltaX = this.x - 15 * Math.sin(this.angle)
