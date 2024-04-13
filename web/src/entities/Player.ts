@@ -19,11 +19,13 @@ export class Player extends Tank {
   constructor(
     context: CanvasRenderingContext2D, 
     id: string, 
-    x: number, 
-    y: number,
     imageIndex: number,
     camera: Camera
   ) {
+
+    const x = Math.floor(Math.random() * camera.gameWidth) + 50 
+    const y = Math.floor(Math.random() * camera.gameHeight) + 50 
+
     super(context, id, x, y, imageIndex, camera)
 
     const position = this.context.canvas.getBoundingClientRect()
@@ -46,7 +48,8 @@ export class Player extends Tank {
 
   onShot(data: EmitMessage) {}
 
-  move(keys: Keys) {
+  move(collidableObjects: Collidable[]) {
+    const keys = this.controller.keys
     this.driving = true
     if (keys.w && !keys.s) { //* When the player is speeding the car
       this.speed += this.acceleration
@@ -84,12 +87,23 @@ export class Player extends Tank {
       this.driving = false
     }
 
-    const newX = this.x + (this.speed + this.boostSpeed) * Math.sin(this.angle)
-    const newY = this.y - (this.speed + this.boostSpeed) * Math.cos(this.angle)
+    const proposedX = this.x + (this.speed + this.boostSpeed) * Math.sin(this.angle)
+    const proposedY = this.y - (this.speed + this.boostSpeed) * Math.cos(this.angle)
+    const [originalX, originalY] = [this.x, this.y]
 
-    // moving the tank if its not in the boundaries
-    if (newX >= this.width / 2 && newX <= this.camera.gameWidth - this.width / 2) this.x = newX
-    if (newY >= this.height / 2 && newY <= this.camera.gameHeight - this.height / 2) this.y = newY
+    this.x = proposedX
+    this.y = proposedY
+
+    const isColliding = this.checkColisions(collidableObjects)
+
+    if (isColliding) {
+      this.x = originalX
+      this.y = originalY
+    } else {
+      // moving the tank if its not in the boundaries
+      if (!(this.x >= this.width / 2 && this.x <= this.camera.gameWidth - this.width / 2)) this.x = originalX
+      if (!(this.y >= this.height / 2 && this.y <= this.camera.gameHeight - this.height / 2)) this.y = originalY
+    }
 
     // Updating the gun position and angle
     const deltaX = this.x - 15 * Math.sin(this.angle)
@@ -97,14 +111,27 @@ export class Player extends Tank {
     this.gun.move(deltaX, deltaY)
   }
 
-  boost(keys: Keys) {
-    this.boostSpeed = keys[' '] && keys.w ? 4 : 0
+  checkColisions(collidableObjects: Collidable[]) {
+
+    const intersects = (rect1: Collidable, rect2: Collidable) => (
+      rect1.x < rect2.x + rect2.width &&
+      rect1.x + rect1.width > rect2.x &&
+      rect1.y < rect2.y + rect2.height &&
+      rect1.y + rect1.height > rect2.y
+    )
+
+    return collidableObjects.some(obj => intersects(this, obj))
   }
 
-  rotateGun(x: number, y: number) {
+  boost() {
+    this.boostSpeed = this.controller.keys[' '] && this.controller.keys.w ? 4 : 0
+  }
+
+  rotateGun() {
+    const mouse = this.controller.mouse
     const gunX = this.x - 15 * Math.sin(this.angle)
     const gunY = this.y + 15 * Math.cos(this.angle)
-    const angle = Math.atan2(x - this.canvasPosition.x - gunX + this.camera.x, -(y - this.canvasPosition.y - gunY + this.camera.y))
+    const angle = Math.atan2(mouse.x - this.canvasPosition.x - gunX + this.camera.x, -(mouse.y - this.canvasPosition.y - gunY + this.camera.y))
     this.gun.rotate(angle)
   }
 
@@ -117,14 +144,15 @@ export class Player extends Tank {
     }
   }
 
-  update(gameCollidableObjects: Collidable[]): void {
-    super.update(gameCollidableObjects)
+  update(collidableObjects: Collidable[]): void {
+    super.update(collidableObjects)
 
-    this.move(this.controller.keys)
-    this.boost(this.controller.keys)
-    this.rotateGun(this.controller.mouse.x, this.controller.mouse.y)
-
+    this.move(collidableObjects)
+    this.boost()
+    this.rotateGun()
     this.updateFlame()
+
+
   }
 
   draw() {

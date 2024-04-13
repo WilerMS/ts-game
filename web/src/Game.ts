@@ -27,7 +27,7 @@ export class Game {
 
     // TODO: Replace this logic to accept individual tank choices
     const index = Math.floor(Math.random() * 4)
-    this.player = new Player(context, playerId, (context.canvas.width / 2), (context.canvas.height / 2), index, this.camera)
+    this.player = new Player(context, playerId, index, this.camera)
     this.enemies = {}
 
     this.background = loadImage(bg)
