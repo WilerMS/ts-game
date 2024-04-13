@@ -92,15 +92,15 @@ export class Gun {
     this.image && this.context.drawImage(this.image, -(this.width/4), -(this.height/4), this.width/2, this.height/2)
     this.context.restore()
 
-    // Drawing the shot
-    const gunX = this.x + 80 * Math.sin(this.rotation)
-    const gunY = this.y - 80 * Math.cos(this.rotation)
-    
-    this.context.save()
-    this.context.translate(gunX - cameraX, gunY - cameraY)
-    this.context.rotate(this.rotation)
-
     if (this.isShooting) {
+      // Drawing the shot
+      const gunX = this.x + 80 * Math.sin(this.rotation)
+      const gunY = this.y - 80 * Math.cos(this.rotation)
+      
+      this.context.save()
+      this.context.translate(gunX - cameraX, gunY - cameraY)
+      this.context.rotate(this.rotation)
+
       const currentShotSprite = this.shotSprites[this.currentShotSprite]
       this.context.drawImage(
         currentShotSprite, 
@@ -109,8 +109,10 @@ export class Gun {
         currentShotSprite.width/2,
         currentShotSprite.height/2,
       )
+
+      this.context.restore()
+
     }
 
-    this.context.restore()
   }
 }
