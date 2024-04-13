@@ -33,11 +33,32 @@ export class Game {
     this.background = loadImage(bg)
 
     this.initWebsocket()
+    this.initPlayerBehaviour() 
+  }
+
+  initPlayerBehaviour() {
+    this.player.onShot = (data) => {
+      if (this.socket.connected) {
+        this.socket.send(data)
+      }
+    }
+
+    this.player.onDamageEnemy = (enemy) => {
+      const currentEnemy = enemy as Enemy
+      if (this.socket.connected) {
+        this.socket.send({
+          type: 'damage',
+          data: {
+            playerId: currentEnemy.id
+          }
+        })
+      }
+    }
 
   }
 
   initWebsocket() {
-    this.socket = new Socket('ws://localhost:3500/game' ?? 'ws://10.200.223.237:3500/game')
+    this.socket = new Socket('ws://localhost:3800/game' ?? 'ws://10.200.223.237:3500/game')
     this.socket.onopen = () => {
       this.socket.send({
         type: 'start',
@@ -47,16 +68,10 @@ export class Game {
           y: this.player.y,
           angle: this.player.angle,
           gunAngle: this.player.gun.rotation,
-          imageIndex: this.player.imageIndex
+          imageIndex: this.player.imageIndex,
+          health: this.player.healthBar.currentHealth
         }
       })
-    }
-
-    this.player.onShot = (data) => {
-      console.log({ data })
-      if (this.socket.connected) {
-        this.socket.send(data)
-      }
     }
 
     this.socket.onstart = data => {
@@ -75,11 +90,20 @@ export class Game {
 
       this.enemies[enemy.playerId].driving = (this.enemies[enemy.playerId].x !== enemy.x || this.enemies[enemy.playerId].y !== enemy.y)
       this.enemies[enemy.playerId].move(enemy)
+      this.enemies[enemy.playerId].healthBar.changeCurrentHealth(enemy.health ?? 100)
     }
 
     this.socket.onshot = enemy => {
       if (enemy.playerId === this.playerId) return
       this.enemies[enemy.playerId].shoot()
+    }
+
+    this.socket.ondamage = data => {
+      if (data.playerId === this.playerId) {
+        this.player.healthBar.changeCurrentHealth(data.health ?? 100)
+        return
+      }
+      this.enemies[data.playerId].healthBar.changeCurrentHealth(data.health ?? 100)
     }
 
     this.socket.ondisconnection = enemy => {
@@ -105,7 +129,8 @@ export class Game {
         y: this.player.y,
         angle: this.player.angle,
         gunAngle: this.player.gun.rotation,
-        imageIndex: this.player.imageIndex
+        imageIndex: this.player.imageIndex,
+        health: this.player.healthBar.currentHealth
       }
     })
 
