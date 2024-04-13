@@ -5,7 +5,7 @@ export interface PlayerData {
   angle: number
   gunAngle: number
   imageIndex: number
-  // health: number
+  health?: number
 }
 
 export interface ShotData {
@@ -15,15 +15,22 @@ export interface ShotData {
   angle: number
 }
 
+export interface DamageData {
+  playerId: string
+}
+
 type EventMessage = 
   { type: 'update', data: PlayerData } |
   { type: 'shoot',  data: ShotData } |
   { type: 'start',  data: { [x: string]: PlayerData } } |
-  { type: 'disconnection',  data: Pick<PlayerData, 'playerId'> }
+  { type: 'disconnection',  data: Pick<PlayerData, 'playerId'> } |
+  { type: 'damage', data: PlayerData }
+
 
 export type EmitMessage =
   { type: 'start' | 'update',  data: PlayerData } |
-  { type: 'shoot',  data: ShotData }
+  { type: 'shoot',  data: ShotData } |
+  { type: 'damage', data: DamageData }
 
 
 
@@ -72,6 +79,9 @@ export class Socket {
       case "shoot":
         this.onshot(message.data)
       break
+      case "damage":
+        this.ondamage(message.data)
+      break
       case "disconnection":
         this.ondisconnection(message.data)
       break
@@ -84,6 +94,7 @@ export class Socket {
   onupdate(data: PlayerData) {}
   onstart(data: { [x: string]: PlayerData }) {}
   onshot(data: ShotData) {}
+  ondamage(data: PlayerData) {}
   ondisconnection(data: Pick<PlayerData, 'playerId'>) {}
 
 }
