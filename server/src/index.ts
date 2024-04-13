@@ -41,6 +41,16 @@ app.ws('/game', (ws, req, next) => {
         client.send(evMessage)
       })
     }
+
+    if (message.type === 'damage') {
+      console.log('event')
+      players[message.data.playerId].health--
+
+      websocket.clients.forEach(function (client) {
+        const evMessage = JSON.stringify({ type: 'damage', data: players[message.data.playerId] })
+        client.send(evMessage)
+      })
+    }
   }
 
   ws.onclose = () => {
@@ -59,6 +69,6 @@ app.ws('/game', (ws, req, next) => {
 })
 
 // running app
-app.listen(3500, () => {
-  console.log(`Server on port ${3500}`)
+app.listen(3800, () => {
+  console.log(`Server on port ${3800}`)
 })
