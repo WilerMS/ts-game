@@ -2,6 +2,7 @@ import { Camera } from '../Camera'
 import projectileImageSrc from '../assets/effects/shell.png'
 import { loadImage } from '../utils'
 import { Collidable } from './Collidable'
+import { Enemy } from './Enemy'
 
 export class Projectile {
 
@@ -38,6 +39,8 @@ export class Projectile {
     loadImage(projectileImageSrc, image => this.image = image)
   }
 
+  onColision(enemy: Collidable) {}
+
   checkColision(collidableObjects: Collidable[]) {
 
     if (this.x > this.context.canvas.width || this.x < 0) this.destroy()
@@ -49,6 +52,7 @@ export class Projectile {
       const checkY = this.y <= (enemy.y - this.camera.y + enemy.height / 2) && this.y >= (enemy.y - this.camera.y - enemy.height / 2)
 
       if (checkX && checkY) {
+        this.onColision(enemy)
         this.destroy()
       }
     }

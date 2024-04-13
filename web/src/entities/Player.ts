@@ -2,6 +2,8 @@ import { Camera } from '../Camera'
 import { Controller, Keys } from '../Controller'
 import { EmitMessage } from '../Socket'
 import { Collidable } from './Collidable'
+import { Enemy } from './Enemy'
+import { Projectile } from './Projectile'
 import { Tank } from './Tank'
 
 export class Player extends Tank {
@@ -52,6 +54,20 @@ export class Player extends Tank {
   }
 
   onShot(data: EmitMessage) {}
+  onDamageEnemy(data: Collidable) {}
+
+  shoot() {
+    const deltaX = this.x - 15 * Math.sin(this.angle) + 65 * Math.sin(this.gun.rotation)
+    const deltaY = this.y  + 15 * Math.cos(this.angle) - 65 * Math.cos(this.gun.rotation)
+
+    const projectile = new Projectile(this.context, deltaX - this.camera.x, deltaY - this.camera.y, this.gun.rotation, this.camera)
+
+    projectile.onColision = enemy => this.onDamageEnemy(enemy)
+
+    this.projectiles.push(projectile)
+
+    this.gun.shoot()
+  }
 
   move(collidableObjects: Collidable[]) {
     const keys = this.controller.keys
