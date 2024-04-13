@@ -35,8 +35,8 @@ npm run dev
 ```
 
 ## Additional Features (Coming soon)
-- [x] **Responsive Design:** Ensures a great experience across various devices.
-- [x] **Game Rooms:** Ability to create and join dedicated game rooms for organized play.
+- [ ] **Responsive Design:** Ensures a great experience across various devices.
+- [ ] **Game Rooms:** Ability to create and join dedicated game rooms for organized play.
 
 ## Contributing
 Contributions to improve the game are highly welcome. Feel free to fork this repository, make changes, and submit a pull request.
