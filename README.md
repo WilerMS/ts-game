@@ -35,6 +35,7 @@ npm run dev
 ```
 
 ## Additional Features (Coming soon)
+- [ ] **Game ui menus:** To select different kind of tanks and weapon, to set game graphic and audio configurations and more.
 - [ ] **Responsive Design:** Ensures a great experience across various devices.
 - [ ] **Game Rooms:** Ability to create and join dedicated game rooms for organized play.
 
