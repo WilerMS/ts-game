@@ -1,3 +1,4 @@
+import { Camera } from '../Camera'
 import projectileImageSrc from '../assets/effects/shell.png'
 import { loadImage } from '../utils'
 import { Collidable } from './Collidable'
@@ -12,6 +13,7 @@ export class Projectile {
   angle!: number
   image!: HTMLImageElement
   destroyed!: boolean
+  camera!: Camera
 
   speed = 20
 
@@ -19,7 +21,8 @@ export class Projectile {
     context: CanvasRenderingContext2D, 
     x: number, 
     y: number, 
-    angle: number
+    angle: number, 
+    camera: Camera
   ) {
 
     this.context = context
@@ -29,20 +32,21 @@ export class Projectile {
     this.destroyed = false
     this.width = 20
     this.height = 36
+    this.camera = camera
 
     // Creating the image and getting width and height
     loadImage(projectileImageSrc, image => this.image = image)
   }
 
-  checkColision(gameCollidableObjects: Collidable[]) {
+  checkColision(collidableObjects: Collidable[]) {
 
     if (this.x > this.context.canvas.width || this.x < 0) this.destroy()
     if (this.y > this.context.canvas.height || this.y < 0) this.destroy()
 
-    for (const enemy of gameCollidableObjects) {
+    for (const enemy of collidableObjects) {
 
-      const checkX = this.x <= (enemy.x + enemy.width / 2) && this.x >= (enemy.x - enemy.width / 2)
-      const checkY = this.y <= (enemy.y + enemy.height / 2) && this.y >= (enemy.y - enemy.height / 2)
+      const checkX = this.x <= (enemy.x - this.camera.x + enemy.width / 2) && this.x >= (enemy.x - this.camera.x - enemy.width / 2)
+      const checkY = this.y <= (enemy.y - this.camera.y + enemy.height / 2) && this.y >= (enemy.y - this.camera.y - enemy.height / 2)
 
       if (checkX && checkY) {
         this.destroy()
@@ -50,11 +54,11 @@ export class Projectile {
     }
   }
 
-  update(gameCollidableObjects: Collidable[]) {
+  update(collidableObjects: Collidable[]) {
     this.x += this.speed * Math.sin(this.angle)
     this.y -= this.speed * Math.cos(this.angle)
 
-    this.checkColision(gameCollidableObjects)
+    this.checkColision(collidableObjects)
   }
 
   draw() {
