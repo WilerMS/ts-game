@@ -4,6 +4,7 @@ import { Collidable } from "./Collidable"
 import { Gun } from "./Gun"
 import { Projectile } from "./Projectile"
 import { Camera } from "../Camera"
+import { HealthBar } from "./HealthBar"
 
 export type TankImages = {
   tank: string,
@@ -36,7 +37,7 @@ export class Tank implements Collidable {
 
   // TODO: See if theres another way to do this
   camera!: Camera
-
+  healthBar!: HealthBar
 
   constructor(
     context: CanvasRenderingContext2D,
@@ -57,6 +58,8 @@ export class Tank implements Collidable {
     this.projectiles = []
     this.width = 70
     this.height = 96
+
+    this.healthBar = new HealthBar(context, x, y)
 
     const gunX = x + 65 * Math.sin(this.angle)
     const gunY = y - 65 * Math.cos(this.angle)
@@ -81,7 +84,6 @@ export class Tank implements Collidable {
 
   updateTracks() {
     if (this.driving) {
-      console.log(this.trackFrame)
       this.trackFrame++
       if (this.trackFrame === this.tracks.length) {
         this.trackFrame = 0

@@ -1,5 +1,6 @@
 import { Camera } from '../Camera'
 import { PlayerData } from '../Socket'
+import { Collidable } from './Collidable'
 import { Tank } from './Tank'
 
 export class Enemy extends Tank {
@@ -30,6 +31,20 @@ export class Enemy extends Tank {
     const deltaX = this.x - 15 * Math.sin(this.angle)
     const deltaY = this.y + 15 * Math.cos(this.angle)
     this.gun.move(deltaX, deltaY)
+
+    this.healthBar.move(this.x - 40, this.y - 90)
+  }
+
+  update(collidableObjects: Collidable[]): void {
+    super.update(collidableObjects)
+
+    this.healthBar.update()
+  }
+
+  draw(): void {
+    super.draw()
+
+    this.healthBar.draw(this.camera)
   }
 
 }

@@ -23,13 +23,18 @@ export class Player extends Tank {
     camera: Camera
   ) {
 
-    const x = Math.floor(Math.random() * camera.gameWidth) + 50 
-    const y = Math.floor(Math.random() * camera.gameHeight) + 50 
+    /* const x = Math.floor(Math.random() * camera.gameWidth) + 50 
+    const y = Math.floor(Math.random() * camera.gameHeight) + 50  */
+
+    const x = Math.floor(Math.random() * 500) + 50 
+    const y = Math.floor(Math.random() * 500) + 50 
 
     super(context, id, x, y, imageIndex, camera)
 
     const position = this.context.canvas.getBoundingClientRect()
     this.canvasPosition = { x: position.x, y: position.y }
+
+    this.healthBar.move(10, 10)
 
     this.controller = new Controller()
     this.controller.click = (x, y) => {
@@ -152,7 +157,6 @@ export class Player extends Tank {
     this.rotateGun()
     this.updateFlame()
 
-
   }
 
   draw() {
@@ -168,5 +172,6 @@ export class Player extends Tank {
     }
 
     super.draw()
+    this.healthBar.draw()
   }
 }
