@@ -1,9 +1,27 @@
 {
-  "devDependencies": {
-    "@eslint/js": "^9.3.0",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react": "^7.34.1",
-    "globals": "^15.3.0",
-    "typescript-eslint": "^7.10.0"
-  }
+  "name": "tanques",
+  "version": "1.0.0",
+  "description": "Tanks game to play on a multiplayer mode.",
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace=server & npm run dev --workspace=web",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WilerMS/ts-game.git"
+  },
+  "keywords": [
+    "typescript",
+    "canvas",
+    "node"
+  ],
+  "author": "wilerms",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WilerMS/ts-game/issues"
+  },
+  "homepage": "https://github.com/WilerMS/ts-game#readme"
 }
